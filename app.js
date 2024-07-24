@@ -5,6 +5,9 @@ const coursesRoutes = require("./routes/courseRoutes");
 
 const app = express();
 const PORT = process.env.PORT || 3000;
+const mongoose = require('mongoose');
+mongoose.connect('mongodb+srv://moelsayed:onlinecourses%40123@onlinecourses.bfc9hky.mongodb.net/onlinecourses')
+  .then(() => console.log('Connected!'));
 // Use logger middleware
 app.use(logger);
 app.use(express.json());
