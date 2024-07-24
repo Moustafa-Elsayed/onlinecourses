@@ -93,10 +93,9 @@ const editCourse = (req, res) => {
 const deleteCourse = async (req, res) => {
   try {
     const id = req.params.id;
-
     // Find and delete the course by its ID
     const deletedCourse = await Course.findByIdAndDelete(id);
-
+    
     // Check if the course was found and deleted
     if (!deletedCourse) {
       return res.status(404).json({ message: "Course not found" });
