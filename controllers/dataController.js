@@ -1,4 +1,3 @@
-// controllers/dataController.js
 const dummyData = require('../data/dummyData');
 
 const getAllData = (req, res) => {
