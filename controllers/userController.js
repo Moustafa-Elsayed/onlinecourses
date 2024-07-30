@@ -3,8 +3,11 @@ const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
 
 // Register
+
 exports.register = async (req, res) => {
   const { username, password, email } = req.body;
+  const photo = req.file; // This will contain the uploaded file
+
   try {
     if (!username || !password || !email) {
       return res
@@ -19,18 +22,25 @@ exports.register = async (req, res) => {
 
     const hashedPassword = await bcrypt.hash(password, 10);
 
-    const newUser = new User({ username, password: hashedPassword, email });
+    const newUser = new User({
+      username,
+      password: hashedPassword,
+      email,
+      photo: photo ? photo.path : undefined, // Store the file path or URL
+    });
     await newUser.save();
 
-    // Generate a token
-    const token = jwt.sign({ userId: newUser._id }, 'your_jwt_secret', { expiresIn: '1h' });
+    const token = jwt.sign({ userId: newUser._id }, "your_jwt_secret", {
+      expiresIn: "1h",
+    });
 
     res.status(201).json({
       message: "User registered successfully",
       data: {
         email,
-        username,  
+        username,
         token,
+        photo: newUser.photo, // Return the photo URL or path
       },
     });
   } catch (error) {
@@ -38,7 +48,6 @@ exports.register = async (req, res) => {
     res.status(500).json({ error: "Server error", details: error.message });
   }
 };
-
 // Login
 exports.login = async (req, res) => {
   const { email, password } = req.body;
