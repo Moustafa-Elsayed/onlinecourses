@@ -4,15 +4,14 @@ const jwt = require("jsonwebtoken");
 
 // Register
 
+// Register
 exports.register = async (req, res) => {
-  const { username, password, email } = req.body;
+  const { username, password, email, role } = req.body; // Include role in the request body if needed
   const photo = req.file; // This will contain the uploaded file
 
   try {
     if (!username || !password || !email) {
-      return res
-        .status(400)
-        .json({ error: "Username, password, and email are required" });
+      return res.status(400).json({ error: "Username, password, and email are required" });
     }
 
     const existingUser = await User.findOne({ username });
@@ -27,10 +26,12 @@ exports.register = async (req, res) => {
       password: hashedPassword,
       email,
       photo: photo ? photo.path : undefined, // Store the file path or URL
+      role, // Set role, defaulting to 'user'
     });
+
     await newUser.save();
 
-    const token = jwt.sign({ userId: newUser._id }, "your_jwt_secret", {
+    const token = jwt.sign({ userId: newUser._id, role: newUser.role }, "your_jwt_secret", {
       expiresIn: "1h",
     });
 
@@ -40,7 +41,8 @@ exports.register = async (req, res) => {
         email,
         username,
         token,
-        photo: newUser.photo, // Return the photo URL or path
+        role
+      
       },
     });
   } catch (error) {
@@ -48,6 +50,7 @@ exports.register = async (req, res) => {
     res.status(500).json({ error: "Server error", details: error.message });
   }
 };
+
 // Login
 exports.login = async (req, res) => {
   const { email, password } = req.body;
@@ -58,15 +61,15 @@ exports.login = async (req, res) => {
     const isMatch = await bcrypt.compare(password, user.password);
     if (!isMatch) return res.status(400).json({ error: "Invalid credentials" });
 
-    const token = jwt.sign({ id: user._id }, process.env.JWT_SECRET, {
+    const token = jwt.sign({ id: user._id, role: user.role }, process.env.JWT_SECRET, {
       expiresIn: "1h",
     });
     res.json({
       status: "success",
       data: {
         email,
-        password,
         token,
+        role: user.role,
       },
     });
   } catch (error) {
@@ -74,12 +77,23 @@ exports.login = async (req, res) => {
   }
 };
 
+
 // Delete User
 exports.deleteUser = async (req, res) => {
   try {
     const user = await User.findByIdAndDelete(req.params.id);
     if (!user) return res.status(404).json({ error: "User not found" });
     res.json({ message: "User deleted successfully" });
+  } catch (error) {
+    res.status(500).json({ error: "Server error" });
+  }
+};
+
+// Get All Users
+exports.getAllUsers = async (req, res) => {
+  try {
+    const users = await User.find();
+    res.json(users);
   } catch (error) {
     res.status(500).json({ error: "Server error" });
   }
