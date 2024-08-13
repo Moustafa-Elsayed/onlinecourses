@@ -1,29 +1,15 @@
 {
-    "version": 2,
-    "builds": [
-      {
-        "src": "package.json",
-        "use": "@vercel/node"
-      }
-    ],
-    "routes": [
-      {
-        "src": "/api/(.*)",
-        "dest": "/api/index.js"
-      },
-      {
-        "src": "/(.*)",
-        "dest": "/public/$1"
-      }
-    ],
-    "env": {
-      "API_URL": "https://api.example.com",
-      "ANOTHER_ENV_VAR": "value"
+  "version": 2,
+  "builds": [
+    {
+      "src": "package.json",
+      "use": "@vercel/static-build",
+      "config": { "distDir": "dist" }
     },
-    "functions": {
-      "api/**/*.js": {
-        "maxDuration": 10
-      }
+    {
+      "src": "_roxi/.roxi/*.js",
+      "use": "@vercel/node",
+      "config": { "includeFiles": "dist/**" }
     }
-  }
-  
+  ]
+}
