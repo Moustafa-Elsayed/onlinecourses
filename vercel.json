@@ -2,14 +2,14 @@
   "version": 2,
   "builds": [
     {
-      "src": "package.json",
-      "use": "@vercel/static-build",
-      "config": { "distDir": "dist" }
-    },
+      "src": "index.js",
+      "use": "@now/node"
+    }
+  ],
+  "routes": [
     {
-      "src": "_roxi/.roxi/*.js",
-      "use": "@vercel/node",
-      "config": { "includeFiles": "dist/**" }
+      "src": "/(.*)",
+      "dest": "index.js"
     }
   ]
 }

@@ -4,6 +4,8 @@
   "description": "",
   "main": "index.js",
   "scripts": {
+    "vercel-build": "next build",
+
     "start": "nodemon app.js",
     "test": "mocha"
   },
