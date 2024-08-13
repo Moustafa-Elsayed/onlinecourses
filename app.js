@@ -12,8 +12,6 @@ app.use(cors());
 const PORT = process.env.PORT || 3000;
 const mongoose = require("mongoose");
 mongoose .connect(process.env.MANGO_URL, {
-  useNewUrlParser: true,
-  useUnifiedTopology: true,
 }).then(() => console.log("Connected!"));
 // Use logger middleware
 app.use(express.json());
