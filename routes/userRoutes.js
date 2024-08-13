@@ -5,7 +5,7 @@ const authMiddleware = require("../middlewares/authMiddleware");
 const upload = require("../middlewares/upload"); // Your multer setup
 
 // Public Routes
-router.post("/register", upload.single("photo"), userController.register);
+router.post("/register", upload.single("avatar"), userController.register);
 router.post("/login", userController.login);
 
 // Protected Routes

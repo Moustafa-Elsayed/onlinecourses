@@ -1,17 +1,20 @@
 const User = require("../models/User.model");
 const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
-
-// Register
+const path = require("path");
 
 // Register
 exports.register = async (req, res) => {
-  const { username, password, email, role } = req.body; // Include role in the request body if needed
-  const photo = req.file; // This will contain the uploaded file
-
+  const { username, password, email, role } = req.body;
+  let avatar;
+  if (req.file) {
+    avatar = path.join("uploads", req.file.filename).replace(/\\/g, "/");
+  }
   try {
     if (!username || !password || !email) {
-      return res.status(400).json({ error: "Username, password, and email are required" });
+      return res
+        .status(400)
+        .json({ error: "Username, password, and email are required" });
     }
 
     const existingUser = await User.findOne({ username });
@@ -25,15 +28,19 @@ exports.register = async (req, res) => {
       username,
       password: hashedPassword,
       email,
-      photo: photo ? photo.path : undefined, // Store the file path or URL
+      avatar, // Store the file path or URL
       role, // Set role, defaulting to 'user'
     });
 
     await newUser.save();
 
-    const token = jwt.sign({ userId: newUser._id, role: newUser.role }, "your_jwt_secret", {
-      expiresIn: "1h",
-    });
+    const token = jwt.sign(
+      { userId: newUser._id, role: newUser.role },
+      process.env.JWT_SECRET,
+      {
+        expiresIn: "1h",
+      }
+    );
 
     res.status(201).json({
       message: "User registered successfully",
@@ -41,8 +48,8 @@ exports.register = async (req, res) => {
         email,
         username,
         token,
-        role
-      
+        role,
+        avatar, // Return the avatar path or URL in the response
       },
     });
   } catch (error) {
@@ -61,15 +68,22 @@ exports.login = async (req, res) => {
     const isMatch = await bcrypt.compare(password, user.password);
     if (!isMatch) return res.status(400).json({ error: "Invalid credentials" });
 
-    const token = jwt.sign({ id: user._id, role: user.role }, process.env.JWT_SECRET, {
-      expiresIn: "1h",
-    });
+    const token = jwt.sign(
+      { id: user._id, role: user.role },
+      process.env.JWT_SECRET,
+      {
+        expiresIn: "1h",
+      }
+    );
+
     res.json({
       status: "success",
       data: {
         email,
         token,
         role: user.role,
+        username: user.username, // Include username in response
+        avatar: user.avatar,     // Include avatar in response
       },
     });
   } catch (error) {
