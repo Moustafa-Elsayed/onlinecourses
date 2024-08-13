@@ -21,6 +21,10 @@ app.use(express.json());
 // Use data routes
 app.use("/api", coursesRoutes);
 app.use("/api/users", userRoutes);
+app.get("/", (req, res) => {
+  res.send("Welcome to the API!");
+});
+
 
 app.listen(PORT, () => {
   console.log(`Server is running on port ${PORT}`);
