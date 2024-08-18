@@ -6,7 +6,7 @@
   "scripts": {
     "vercel-build": "next build",
 
-    "start": "nodemon index.js",
+    "start": "nodemon app.js",
     "test": "mocha"
   },
   "keywords": [],
