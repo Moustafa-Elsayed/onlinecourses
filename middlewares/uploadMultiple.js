@@ -27,22 +27,13 @@ const fileFilter = (req, file, cb) => {
   cb(null, true);
 };
 
-// Set up the multer middleware
-const upload = multer({
+// Set up the multer middleware for multiple file uploads
+const uploadMultiple = multer({
   storage: storage,
   fileFilter: fileFilter,
   limits: {
     fileSize: 1024 * 1024 * 5, // 5 MB file size limit
   },
-});
+}).array('photos', 5); // Multiple photos field name, limit to 5 files
 
-// Middleware to handle single or multiple uploads based on route
-const uploadHandler = (fieldName, maxFiles = 1) => {
-  if (maxFiles === 1) {
-    return upload.single(fieldName);
-  } else {
-    return upload.array(fieldName, maxFiles);
-  }
-};
-
-module.exports = uploadHandler;
+module.exports = uploadMultiple;

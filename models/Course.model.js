@@ -13,7 +13,7 @@ const courseSchema = new Schema({
   duration: { type: String, required: true },
   level: { type: String, required: true },
   instructor: { type: String, required: true },
-  photo: { type: String, default: "uploads/defult.jpg" },
+  photos: { type: [String], default: ["uploads/default.jpg"] }, // Changed to an array of strings
 });
 
 const Course = mongoose.model("Course", courseSchema);

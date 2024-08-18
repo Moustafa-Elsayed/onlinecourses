@@ -3,14 +3,14 @@ const router = express.Router();
 const CoursesController = require('../controllers/courseController');
 const allowedTo = require('../middlewares/allowedTo');
 const authMiddleware = require('../middlewares/authMiddleware');
-const upload = require('../middlewares/upload'); 
+const uploadHandler = require('../middlewares/upload'); 
 router.get('/courses', CoursesController.getAllCourses);
 router.get('/courses/:id', CoursesController.getCourseById);
 router.post(
   '/courses',
   authMiddleware.authenticate,
   allowedTo('ADMIN'),
-  upload.single('photo'), // Add multer middleware for file upload
+  uploadHandler("photo",3), // Add multer middleware for file upload
   CoursesController.addCourse
 );
 router.put(

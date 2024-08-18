@@ -45,15 +45,13 @@ const addCourse = async (req, res) => {
     // Check if a course with the same title already exists
     const existingCourse = await Course.findOne({ title });
     if (existingCourse) {
-      return res
-        .status(400)
-        .json({ message: "Course with this title already exists" });
+      return res.status(400).json({ message: "Course with this title already exists" });
     }
 
-    // Handle the uploaded file (if any)
-    let photo;
-    if (req.file) {
-      photo = path.join("uploads", req.file.filename).replace(/\\/g, "/");
+    // Handle the uploaded files (if any)
+    let photos = [];
+    if (req.files && Array.isArray(req.files)) {
+      photos = req.files.map(file => path.join("uploads", file.filename).replace(/\\/g, "/"));
     }
 
     // Safely parse the curriculum
@@ -74,7 +72,7 @@ const addCourse = async (req, res) => {
       level,
       instructor,
       curriculum: parsedCurriculum, // Use the safely parsed curriculum
-      photo,
+      photos, // Store the array of photo URLs
     });
 
     // Save the new course to the database
@@ -84,11 +82,10 @@ const addCourse = async (req, res) => {
     res.status(201).json({ status: "success", data: newCourse });
   } catch (error) {
     // Respond with error
-    res
-      .status(500)
-      .json({ message: "Internal Server Error", error: error.message });
+    res.status(500).json({ message: "Internal Server Error", error: error.message });
   }
 };
+
 
 // Edit an existing course
 const editCourse = async (req, res) => {
